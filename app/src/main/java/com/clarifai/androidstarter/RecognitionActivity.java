@@ -45,6 +45,8 @@ public class RecognitionActivity extends Activity {
     imageView = (ImageView) findViewById(R.id.image_view);
     textView = (TextView) findViewById(R.id.text_view);
     selectButton = (Button) findViewById(R.id.select_button);
+
+    // TODO this is where we pick the file
     selectButton.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
         // Send an intent to launch the media picker.
@@ -115,7 +117,7 @@ public class RecognitionActivity extends Activity {
       ByteArrayOutputStream out = new ByteArrayOutputStream();
       scaled.compress(Bitmap.CompressFormat.JPEG, 90, out);
       byte[] jpeg = out.toByteArray();
-
+      //TODO: send file here (in the form of a byte[]
       // Send the JPEG to Clarifai and return the result.
       return client.recognize(new RecognitionRequest(jpeg)).get(0);
     } catch (ClarifaiException e) {
