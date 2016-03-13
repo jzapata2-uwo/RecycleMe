@@ -128,12 +128,13 @@ public class RecognitionActivity extends Activity {
   private void updateUIForResult(RecognitionResult result) {
     if (result != null) {
       if (result.getStatusCode() == RecognitionResult.StatusCode.OK) {
+
         // Display the list of tags in the UI.
         StringBuilder b = new StringBuilder();
         for (Tag tag : result.getTags()) {
           b.append(b.length() > 0 ? ", " : "").append(tag.getName());
         }
-        textView.setText("Tags:\n" + b);
+        textView.setText("Category: "+com.nHacks.recycleMe.Model_Synonyms.getCategory(result.getTags())+"\nTags:\n" + b);
       } else {
         Log.e(TAG, "Clarifai: " + result.getStatusMessage());
         textView.setText("Sorry, there was an error recognizing your image.");
