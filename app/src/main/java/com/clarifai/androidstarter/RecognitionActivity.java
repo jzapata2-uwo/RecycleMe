@@ -18,8 +18,10 @@ import com.clarifai.api.RecognitionRequest;
 import com.clarifai.api.RecognitionResult;
 import com.clarifai.api.Tag;
 import com.clarifai.api.exception.ClarifaiException;
+import com.nHacks.recycleMe.*;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 
 import static android.provider.MediaStore.Images.Media;
@@ -46,12 +48,16 @@ public class RecognitionActivity extends Activity {
     textView = (TextView) findViewById(R.id.text_view);
     selectButton = (Button) findViewById(R.id.select_button);
     selectButton.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
+      @Override
+      public void onClick(View v) {
         // Send an intent to launch the media picker.
         final Intent intent = new Intent(Intent.ACTION_PICK, Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, CODE_PICK);
       }
     });
+
+    new Helper_FileManager();
+
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -59,18 +65,34 @@ public class RecognitionActivity extends Activity {
     if (requestCode == CODE_PICK && resultCode == RESULT_OK) {
       // The user picked an image. Send it to Clarifai for recognition.
       Log.d(TAG, "User picked image: " + intent.getData());
+
+      // TODO convert image to bitmap
       Bitmap bitmap = loadBitmapFromUri(intent.getData());
       if (bitmap != null) {
-        imageView.setImageBitmap(bitmap);
+//        imageView.setImageBitmap(bitmap);
+
+
+        File root = new File(Helper_FileManager.path+"landfill.jpg");
+//        String fileName_landfill = "landfill.jpg";
+
+        Bitmap bitmap_landfill = BitmapFactory.decodeFile(root.getName());
+
+        imageView.setImageBitmap(bitmap_landfill);
+
+        //TODO HERE NOW!!
+
         textView.setText("Recognizing...");
         selectButton.setEnabled(false);
 
         // Run recognition on a background thread since it makes a network call.
         new AsyncTask<Bitmap, Void, RecognitionResult>() {
-          @Override protected RecognitionResult doInBackground(Bitmap... bitmaps) {
+          @Override
+          protected RecognitionResult doInBackground(Bitmap... bitmaps) {
             return recognizeBitmap(bitmaps[0]);
           }
-          @Override protected void onPostExecute(RecognitionResult result) {
+
+          @Override
+          protected void onPostExecute(RecognitionResult result) {
             updateUIForResult(result);
           }
         }.execute(bitmap);
