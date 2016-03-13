@@ -26,7 +26,6 @@ import com.clarifai.api.exception.ClarifaiException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashSet;
 
 import static android.provider.MediaStore.Images.Media;
 
@@ -47,15 +46,13 @@ public class RecognitionActivity extends Activity implements SensorEventListener
   private SensorManager mSensorManager;
   private Sensor mProximity;
   private TextView indicator;
-  private HashSet<String> container;
-  private HashSet<String> bottle;
-  private HashSet<String> paper;
-  private HashSet<String> cardboard;
-  private HashSet<String> food;
-  private HashSet<String> organic;
-  private String thesaurus = "http://words.bighugelabs.com/api/2/a378ed384980be84bbdb35b7b7962288/";
-  // Instantiate the RequestQueue.
-  // RequestQueue queue = Volley.newRequestQueue(this);
+//  private HashSet<String> container;
+//  private HashSet<String> bottle;
+//  private HashSet<String> paper;
+//  private HashSet<String> cardboard;
+//  private HashSet<String> food;
+//  private HashSet<String> organic;
+
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -104,9 +101,6 @@ public class RecognitionActivity extends Activity implements SensorEventListener
     }
   }
 
-  public void populateHashSets(){
-    
-  }
 
   @Override
   public final void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -181,12 +175,9 @@ public class RecognitionActivity extends Activity implements SensorEventListener
   private void updateUIForResult(RecognitionResult result) {
     if (result != null) {
       if (result.getStatusCode() == RecognitionResult.StatusCode.OK) {
-        // Display the list of tags in the UI.
-        StringBuilder b = new StringBuilder();
         for (Tag tag : result.getTags()) {
-          b.append(b.length() > 0 ? ", " : "").append(tag.getName());
+          //TODO: Classification Algo goes here
         }
-        textView.setText("Tags:\n" + b);
       } else {
         Log.e(TAG, "Clarifai: " + result.getStatusMessage());
         textView.setText("Sorry, there was an error recognizing your image.");
