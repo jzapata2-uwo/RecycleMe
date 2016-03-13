@@ -11,7 +11,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.content.Context;
 
 import com.clarifai.api.ClarifaiClient;
 import com.clarifai.api.RecognitionRequest;
@@ -28,7 +34,7 @@ import static android.provider.MediaStore.Images.Media;
 /**
  * A simple Activity that performs recognition using the Clarifai API.
  */
-public class RecognitionActivity extends Activity {
+public class RecognitionActivity extends Activity implements SensorEventListener{
   private static final String TAG = RecognitionActivity.class.getSimpleName();
 
   private static final int CODE_PICK = 1;
@@ -38,12 +44,16 @@ public class RecognitionActivity extends Activity {
   private Button selectButton;
   private ImageView imageView;
   private TextView textView;
+  private SensorManager mSensorManager;
+  private Sensor mProximity;
+  private TextView indicator;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_recognition);
     imageView = (ImageView) findViewById(R.id.image_view);
     textView = (TextView) findViewById(R.id.text_view);
+    indicator = (TextView) findViewById(R.id.textView);
     selectButton = (Button) findViewById(R.id.select_button);
     selectButton.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
@@ -52,6 +62,10 @@ public class RecognitionActivity extends Activity {
         startActivityForResult(intent, CODE_PICK);
       }
     });
+    // Get an instance of the sensor service, and use that to get an instance of
+    // a particular sensor.
+    mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+    mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -78,6 +92,31 @@ public class RecognitionActivity extends Activity {
         textView.setText("Unable to load selected image.");
       }
     }
+  }
+
+  @Override
+  public final void onAccuracyChanged(Sensor sensor, int accuracy) {
+    // Do something here if sensor accuracy changes.
+  }
+
+  public final void onSensorChanged(SensorEvent event) {
+    float distance = event.values[0];
+    // Do something with this sensor data.
+    indicator.setText(Float.toString(distance));
+  }
+
+  @Override
+  protected void onResume() {
+    // Register a listener for the sensor.
+    super.onResume();
+    mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
+  }
+
+  @Override
+  protected void onPause() {
+    // Be sure to unregister the sensor when the activity pauses.
+    super.onPause();
+    mSensorManager.unregisterListener(this);
   }
 
   /** Loads a Bitmap from a content URI returned by the media picker. */
