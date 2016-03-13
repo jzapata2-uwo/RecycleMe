@@ -1,9 +1,14 @@
 package com.clarifai.androidstarter;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,13 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.TextView;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.content.Context;
 
 import com.clarifai.api.ClarifaiClient;
 import com.clarifai.api.RecognitionRequest;
@@ -27,6 +26,7 @@ import com.clarifai.api.exception.ClarifaiException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
 
 import static android.provider.MediaStore.Images.Media;
 
@@ -47,6 +47,15 @@ public class RecognitionActivity extends Activity implements SensorEventListener
   private SensorManager mSensorManager;
   private Sensor mProximity;
   private TextView indicator;
+  private HashSet<String> container;
+  private HashSet<String> bottle;
+  private HashSet<String> paper;
+  private HashSet<String> cardboard;
+  private HashSet<String> food;
+  private HashSet<String> organic;
+  private String thesaurus = "http://words.bighugelabs.com/api/2/a378ed384980be84bbdb35b7b7962288/";
+  // Instantiate the RequestQueue.
+  // RequestQueue queue = Volley.newRequestQueue(this);
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -64,6 +73,7 @@ public class RecognitionActivity extends Activity implements SensorEventListener
     });
     // Get an instance of the sensor service, and use that to get an instance of
     // a particular sensor.
+
     mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
     mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
   }
@@ -92,6 +102,10 @@ public class RecognitionActivity extends Activity implements SensorEventListener
         textView.setText("Unable to load selected image.");
       }
     }
+  }
+
+  public void populateHashSets(){
+    
   }
 
   @Override
